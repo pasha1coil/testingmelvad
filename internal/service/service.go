@@ -1,42 +1,33 @@
 package service
 
 import (
-	"testingMelvad/internal/models"
-	"testingMelvad/internal/repository"
+	"github.com/pasha1coil/testingmelvad/internal/models"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Tasks interface {
-	Increment(incr *models.Incr) (int, error)
-	CalculateHMAC(hmac *models.Hmac) (string, error)
-	AddUser(user *models.Users) (string, error)
+	Increment(incr *models.Incr) (int64, error)
+	CalculateHMAC(hmac *models.Hash) (string, error)
+	AddUser(user *models.Users) (int, error)
 }
 
-type Service struct {
-	tasks Tasks
-}
-
-func NewService(t Tasks) *Service {
-	return &Service{
-		tasks: t,
-	}
-}
-
-func NewTasksService(repo repository.Tasks) *TasksService {
+func NewTasksService(repo Tasks) *TasksService {
 	return &TasksService{repo: repo}
 }
 
 type TasksService struct {
-	repo repository.Tasks
+	repo Tasks
 }
 
-func (s *TasksService) Increment(incr *models.Incr) (int, error) {
+func (s *TasksService) Increment(incr *models.Incr) (int64, error) {
 	return s.repo.Increment(incr)
 }
 
-func (s *TasksService) CalculateHMAC(hmac *models.Hmac) (string, error) {
+func (s *TasksService) CalculateHMAC(hmac *models.Hash) (string, error) {
 	return s.repo.CalculateHMAC(hmac)
 }
 
-func (s *TasksService) AddUser(user *models.Users) (string, error) {
+func (s *TasksService) AddUser(user *models.Users) (int, error) {
 	return s.repo.AddUser(user)
 }

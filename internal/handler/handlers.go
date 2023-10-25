@@ -3,17 +3,21 @@ package handler
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pasha1coil/testingmelvad/internal/models"
+	"github.com/pasha1coil/testingmelvad/internal/service"
 	log "github.com/sirupsen/logrus"
-	"testingMelvad/internal/models"
-	"testingMelvad/internal/service"
 )
 
 type Handlers struct {
-	service *service.TasksService
+	service   *service.TasksService
+	validator *validator.Validate
 }
 
 func NewHandlers(service *service.TasksService) *Handlers {
-	return &Handlers{service: service}
+	return &Handlers{
+		service:   service,
+		validator: validator.New(),
+	}
 }
 
 // POST `/redis/incr`
@@ -28,8 +32,7 @@ func (h *Handlers) PostIncr(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(incr); err != nil {
+	if err := h.validator.Struct(incr); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -40,14 +43,16 @@ func (h *Handlers) PostIncr(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	return c.Status(fiber.StatusOK).JSON(value)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"value": value,
+	})
 }
 
 // POST `/sign/hmacsha512`
 func (h *Handlers) PostHmac(c *fiber.Ctx) error {
 	log.Infoln("Start Handler - PostHmac")
 
-	hmac := new(models.Hmac)
+	hmac := new(models.Hash)
 
 	if err := c.BodyParser(hmac); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -55,8 +60,7 @@ func (h *Handlers) PostHmac(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(hmac); err != nil {
+	if err := h.validator.Struct(hmac); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -67,7 +71,9 @@ func (h *Handlers) PostHmac(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	return c.Status(fiber.StatusOK).JSON(value)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"HMAC": value,
+	})
 }
 
 // POST `/postgres/users`
@@ -82,8 +88,7 @@ func (h *Handlers) PostUsers(c *fiber.Ctx) error {
 		})
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
+	if err := h.validator.Struct(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -94,5 +99,7 @@ func (h *Handlers) PostUsers(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	return c.Status(fiber.StatusOK).JSON(id)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"Id": id,
+	})
 }

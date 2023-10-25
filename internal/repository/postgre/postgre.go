@@ -1,10 +1,12 @@
 package postgre
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 type Config struct {
@@ -25,8 +27,12 @@ func InitdDB(cfg *Config) (*sql.DB, error) {
 		log.Errorf("Failed init database:%s", err.Error())
 		return nil, err
 	}
+
 	log.Infoln("Ping database...")
-	err = db.Ping()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = db.PingContext(ctx)
 	if err != nil {
 		log.Errorf("Failed ping database:%s", err.Error())
 		return nil, err

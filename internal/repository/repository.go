@@ -1,21 +1,17 @@
 package repository
 
 import (
-	"testingMelvad/internal/models"
+	"github.com/pasha1coil/testingmelvad/internal/models"
 )
 
+//go:generate mockgen -source=repository.go -destination=mocks/mock.go
+
 type Tasks interface {
-	Increment(incr *models.Incr) (int, error)
-	CalculateHMAC(hmac *models.Hmac) (string, error)
-	AddUser(user *models.Users) (string, error)
+	Increment(incr *models.Incr) (int64, error)
+	CalculateHMAC(hmac *models.Hash) (string, error)
+	AddUser(user *models.Users) (int, error)
 }
 
 type Repository struct {
 	tasks Tasks
-}
-
-func NewRepository(t Tasks) *Repository {
-	return &Repository{
-		tasks: t,
-	}
 }

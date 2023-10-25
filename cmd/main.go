@@ -4,15 +4,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
+	"github.com/pasha1coil/testingmelvad/internal/handler"
+	"github.com/pasha1coil/testingmelvad/internal/repository"
+	"github.com/pasha1coil/testingmelvad/internal/repository/postgre"
+	"github.com/pasha1coil/testingmelvad/internal/repository/redis"
+	"github.com/pasha1coil/testingmelvad/internal/service"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 	"syscall"
-	"testingMelvad/internal/handler"
-	"testingMelvad/internal/repository"
-	"testingMelvad/internal/repository/postgre"
-	"testingMelvad/internal/repository/redis"
-	"testingMelvad/internal/service"
 	"time"
 )
 
@@ -41,6 +41,7 @@ func main() {
 	// Инициализация Redis
 	redisClient, err := redis.InitRedis(&redis.RedisConfig{
 		Addr: os.Getenv("REDIS_ADDR"),
+		Port: os.Getenv("REDIS_PORT"),
 		Pass: os.Getenv("REDIS_PASS"),
 	})
 	if err != nil {
@@ -53,7 +54,7 @@ func main() {
 	rep := repository.NewTasksRepo(db, redisClient)
 	// Инициализация сервиса
 	log.Infoln("Init service...")
-	service := service.NewTasksService(rep)
+	srvc := service.NewTasksService(rep)
 
 	// Инициализация GoFiber
 	app := fiber.New(fiber.Config{
@@ -64,7 +65,7 @@ func main() {
 
 	// Инициализация API хэндлеров
 	log.Infoln("Init handlers...")
-	apiHandlers := handler.NewHandlers(service)
+	apiHandlers := handler.NewHandlers(srvc)
 	app.Post("/redis/incr", apiHandlers.PostIncr)
 	app.Post("/sign/hmacsha512", apiHandlers.PostHmac)
 	app.Post("/postgres/users", apiHandlers.PostUsers)
@@ -78,7 +79,7 @@ func main() {
 
 	// Starting server
 	go func() {
-		log.Println("Starting HTTP server on port:", os.Getenv("SRV_PORT"))
+		log.Infoln("Starting HTTP server on port:", os.Getenv("SRV_PORT"))
 		if err := app.Listen(":" + os.Getenv("SRV_PORT")); err != nil {
 			log.Errorf("Failed to start HTTP server: %s\n", err.Error())
 			serverError <- err
@@ -92,11 +93,11 @@ func main() {
 	case err := <-serverError:
 		log.Fatalf("Failed to start server, %v", err)
 	case <-stop:
-		log.Println("Shutting down the server...")
+		log.Infoln("Shutting down the server...")
 		if err := app.Shutdown(); err != nil {
-			log.Printf("Graceful shutdown failed: %s\n", err.Error())
+			log.Infof("Graceful shutdown failed: %s\n", err.Error())
 		} else {
-			log.Println("Server stopped")
+			log.Infoln("Server stopped")
 		}
 	}
 }

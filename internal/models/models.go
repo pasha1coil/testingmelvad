@@ -2,10 +2,10 @@ package models
 
 type Incr struct {
 	Key   string `json:"key" validate:"required"`
-	Value int    `json:"value" validate:"required"`
+	Value int64  `json:"value" validate:"required"`
 }
 
-type Hmac struct {
+type Hash struct {
 	Text string `json:"text" validate:"required"`
 	Key  string `json:"key" validate:"required"`
 }
