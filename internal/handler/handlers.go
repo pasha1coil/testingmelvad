@@ -100,6 +100,6 @@ func (h *Handlers) PostUsers(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"Id": id,
+		"id": id,
 	})
 }
