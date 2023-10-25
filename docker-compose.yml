@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgresql:
+    container_name: pg
+    image: postgres:alpine
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      - POSTGRES_USER=${DB_UNAME}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAMEDB}
+      - PG_DATA:/data/postgres
+  redis:
+    image: 'redis:latest'
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
