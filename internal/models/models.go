@@ -12,5 +12,5 @@ type Hash struct {
 
 type Users struct {
 	Name string `json:"name" validate:"required"`
-	Age  int    `json:"age" validate:"required"`
+	Age  uint64 `json:"age" validate:"required"`
 }
