@@ -63,7 +63,7 @@
 }
 ```
 
-- input (POST) /sign/hmacsha512
+- input (POST) /postgres/users
 ```
 {
      "name": "Alex",

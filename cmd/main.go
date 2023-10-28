@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Инициализация базы данных
-	db, err := postgre.InitdDB(&postgre.Config{
+	db, err := postgre.Migrate(&postgre.Config{
 		Uname:      os.Getenv("DB_UNAME"),
 		Pass:       os.Getenv("DB_PASS"),
 		NameDB:     os.Getenv("DB_NAMEDB"),

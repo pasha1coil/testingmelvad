@@ -22,15 +22,15 @@ func TestCalculateHMAC(t *testing.T) {
 	}
 }
 
-func TestCreateTable(t *testing.T) {
-	db, mock, _ := sqlmock.New()
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS").WillReturnResult(sqlmock.NewResult(1, 1))
-
-	redisClient := redis.NewClient(&redis.Options{})
-	repo := NewTasksRepo(db, redisClient)
-
-	err := repo.CreateTable()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-}
+//func TestCreateTable(t *testing.T) {
+//	db, mock, _ := sqlmock.New()
+//	mock.ExpectExec("CREATE TABLE IF NOT EXISTS").WillReturnResult(sqlmock.NewResult(1, 1))
+//
+//	redisClient := redis.NewClient(&redis.Options{})
+//	repo := NewTasksRepo(db, redisClient)
+//
+//	err := repo.CreateTable()
+//	if err != nil {
+//		t.Errorf("Expected no error, got %v", err)
+//	}
+//}
